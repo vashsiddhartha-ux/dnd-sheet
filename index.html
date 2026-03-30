@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2024 D&D Final Permanent Sheet</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Arial Narrow', sans-serif; }
+        body { background: #333; display: flex; flex-direction: column; align-items: center; gap: 40px; padding: 20px; margin: 0; }
+        .save-controls { background: #eee; padding: 15px; border-radius: 8px; width: 8.5in; border: 2px solid black; position: sticky; top: 10px; z-index: 100; }
+        #shareLink { width: 100%; padding: 8px; font-size: 11px; background: #ddd; border: 1px solid #999; }
+        @media print { .save-controls { display: none; } }
+        .page { width: 8.5in; height: 11in; background: white; padding: 0.3in; box-shadow: 0 0 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; position: relative; overflow: hidden; page-break-after: always; }
+        .header-top { display: flex; gap: 10px; border-bottom: 2px solid black; padding-bottom: 10px; margin-bottom: 10px; }
+        .header-info { flex: 1.8; display: flex; flex-direction: column; gap: 5px; }
+        .input-line { border: none; border-bottom: 1px solid #999; width: 100%; font-weight: bold; font-size: 14px; outline: none; background: transparent; }
+        .label-tiny { font-size: 8px; font-weight: 900; text-transform: uppercase; color: #444; }
+        .combat-stats { flex: 3.2; display: flex; justify-content: flex-end; gap: 8px; align-items: flex-start; }
+        .stat-box { border: 1px solid black; padding: 4px; border-radius: 5px; text-align: center; }
+        .hd-container { display: flex; flex-direction: column; gap: 2px; border: 1px solid black; padding: 3px; border-radius: 5px; min-width: 90px; }
+        .hd-row { display: flex; gap: 2px; }
+        .hd-input { width: 100%; text-align: center; border: 1px solid #ccc; font-size: 10px; padding: 1px; }
+        .ability-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; margin-bottom: 15px; }
+        .ability-box { border: 2px solid black; border-radius: 10px; padding: 5px; display: flex; flex-direction: column; align-items: center; }
+        .mod-display { font-size: 22px; font-weight: 900; width: 100%; text-align: center; border: none; outline: none; background: transparent; }
+        .score-circle { border: 1.5px solid black; border-radius: 50%; width: 20px; height: 20px; text-align: center; font-size: 10px; margin-bottom: 5px; }
+        .skill-row { width: 100%; display: flex; align-items: center; gap: 2px; border-top: 1px solid #eee; padding: 1px 0; }
+        .skill-row label { font-size: 7px; flex-grow: 1; font-weight: bold; white-space: nowrap; }
+        .skill-row input[type="text"] { width: 14px; border: none; border-bottom: 1px solid #ccc; font-size: 8px; text-align: center; background: transparent; }
+        .scroll-container { border: 2px solid black; border-radius: 5px; overflow-y: scroll; background: #fff; flex-grow: 1; }
+        .scroll-row { display: flex; border-bottom: 1px solid #eee; min-height: 25px; align-items: stretch; }
+        .scroll-row input, .scroll-row textarea { border: none; font-size: 10px; outline: none; padding: 2px; background: transparent; resize: none; }
+        .scroll-header { display: flex; background: #f0f0f0; border-bottom: 2px solid black; font-weight: bold; font-size: 8px; position: sticky; top: 0; z-index: 10; text-transform: uppercase; }
+        .diamond { appearance: none; width: 8px; height: 8px; border: 1px solid black; transform: rotate(45deg); cursor: pointer; flex-shrink: 0; }
+        .diamond:checked { background: black; }
+        textarea { width: 100%; border: 2px solid black; resize: none; font-size: 11px; padding: 5px; }
+        .spell-slots-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin: 10px 0; border: 1px solid #ccc; padding: 5px; border-radius: 5px;}
+        .slot-row { display: flex; align-items: center; gap: 4px; font-size: 9px; font-weight: bold; }
+        .slot-line { border: none; border-bottom: 1px solid black; width: 25px; text-align: center; font-size: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="save-controls">
+    <div class="label-tiny">Character Save Link (Copy this to save your progress):</div>
+    <input type="text" id="shareLink" readonly onclick="this.select()">
+    <button onclick="copyToClipboard()" style="margin-top:5px; width:100%; background:black; color:white; border:none; padding:8px; font-weight:bold; cursor:pointer;">Copy Link</button>
+</div>
+
+<div class="page">
+    <div class="header-top">
+        <div class="header-info">
+            <div><input type="text" id="n" class="input-line" style="font-size:18px;"><div class="label-tiny">Name</div></div>
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;"><input type="text" id="bg" class="input-line" placeholder="Background"><div class="label-tiny">Background</div></div>
+                <div style="flex:1;"><input type="text" id="cl" class="input-line" placeholder="Class"><div class="label-tiny">Class</div></div>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;"><input type="text" id="sp" class="input-line" placeholder="Species"><div class="label-tiny">Species</div></div>
+                <div style="flex:1;"><input type="text" id="sub" class="input-line" placeholder="Subclass"><div class="label-tiny">Subclass</div></div>
+            </div>
+        </div>
+        <div class="combat-stats">
+            <div class="stat-box" style="width:40px;"><div class="label-tiny">LVL</div><input type="text" id="lvl" style="width:100%; text-align:center; border:none; font-weight:900;" value="1"></div>
+            <div class="stat-box" style="width:40px;"><div class="label-tiny">AC</div><input type="text" id="ac" style="width:100%; text-align:center; border:none; font-weight:bold;" value="10"></div>
+            <div style="display:flex; flex-direction:column; gap:2px; border:1px solid black; padding:3px; border-radius:5px;">
+                <div class="label-tiny" style="text-align:center;">Hit Points</div>
+                <input type="text" id="hp" style="font-size:20px; width:85px; text-align:center; border:1px solid #ccc; font-weight:bold;" placeholder="Current">
+                <div style="display:flex; gap:2px;">
+                    <input type="text" id="hpm" style="width:41px; font-size:9px; text-align:center;" placeholder="Max">
+                    <input type="text" id="hpt" style="width:41px; font-size:9px; text-align:center;" placeholder="Temp">
+                </div>
+            </div>
+            <div class="hd-container">
+                <div class="label-tiny" style="text-align:center;">Hit Dice</div>
+                <div class="hd-row"><input type="text" id="hdt" class="hd-input" placeholder="Die"><input type="text" id="hdm" class="hd-input" placeholder="Mod"></div>
+                <div class="hd-row"><input type="text" id="hds" class="hd-input" placeholder="Spent"><input type="text" id="hdx" class="hd-input" placeholder="Max"></div>
+            </div>
+            <div class="stat-box">
+                <div class="label-tiny">Death</div>
+                <div style="font-size:8px;"><input type="checkbox" id="ds1" class="diamond"><input type="checkbox" id="ds2" class="diamond"><input type="checkbox" id="ds3" class="diamond"></div>
+                <div style="font-size:8px;"><input type="checkbox" id="df1" class="diamond"><input type="checkbox" id="df2" class="diamond"><input type="checkbox" id="df3" class="diamond"></div>
+            </div>
+        </div>
+    </div>
+    <div class="ability-grid" id="abilityContainer"></div>
+    <div style="display:flex; flex-direction:column; height:220px;">
+        <div class="label-tiny">Weapons & Combat Cantrips</div>
+        <div class="scroll-container" id="weaponRows">
+            <div class="scroll-header">
+                <div style="width:25%; padding-left:5px;">Weapon Name</div>
+                <div style="width:10%; text-align:center;">Atk</div>
+                <div style="width:15%; text-align:center;">Damage</div>
+                <div style="width:50%; padding-left:5px;">Properties/Notes</div>
+            </div>
+        </div>
+    </div>
+    <div style="display:flex; gap:10px; flex-grow:1; margin-top:10px;">
+        <div style="flex:1; display:flex; flex-direction:column;"><div class="label-tiny">Class Features</div><textarea id="f1" style="flex-grow:1; min-height:220px;"></textarea></div>
+        <div style="flex:1; display:flex; flex-direction:column;"><div class="label-tiny">Species Traits & Feats</div><textarea id="f2" style="flex-grow:1; min-height:220px;"></textarea></div>
+    </div>
+</div>
+
+<div class="page">
+    <div style="display:flex; gap:10px; margin-bottom:5px;">
+        <div style="flex:2;"><div class="label-tiny">Appearance</div><textarea id="app" style="height:45px;"></textarea></div>
+        <div style="flex:1;"><div class="label-tiny">Alignment</div><input type="text" id="ali" class="input-line"></div>
+    </div>
+    <div style="display:flex; gap:10px; border-bottom:2px solid black; padding-bottom:5px;">
+        <div style="flex:1;"><input type="text" id="sab" class="input-line" placeholder="Ability"><div class="label-tiny">Spell Ability</div></div>
+        <div style="flex:1;"><input type="text" id="smd" class="input-line" placeholder="+5"><div class="label-tiny">Modifier</div></div>
+        <div style="flex:1;"><input type="text" id="sdc" class="input-line" placeholder="13"><div class="label-tiny">Save DC</div></div>
+    </div>
+    <div class="spell-slots-container" id="slots"></div>
+    <div class="scroll-container" style="height:350px;" id="spellRows">
+        <div class="scroll-header">
+            <div style="width:5%; text-align:center;">LV</div>
+            <div style="width:20%; padding-left:5px;">Spell Name</div>
+            <div style="width:10%; text-align:center;">Time</div>
+            <div style="width:10%; text-align:center;">Range</div>
+            <div style="width:20%; text-align:center;">Tags</div>
+            <div style="width:35%; padding-left:5px;">Effect/Notes</div>
+        </div>
+    </div>
+    <div style="display:flex; gap:10px; flex-grow:1; margin-top:10px;">
+        <div style="flex:1.2; display:flex; flex-direction:column;">
+            <div class="label-tiny">Equipment</div>
+            <div class="scroll-container" style="display:flex; flex-direction:column;">
+                <textarea id="eq" style="border:none; flex-grow:1; min-height:100px;"></textarea>
+                <div style="border-top:1px solid #000; padding:5px; background:#f9f9f9;">
+                    <div class="label-tiny">Attunement</div>
+                    <input type="text" id="at1" class="input-line" style="font-size:10px;" placeholder="Slot 1"><input type="text" id="at2" class="input-line" style="font-size:10px;" placeholder="Slot 2"><input type="text" id="at3" class="input-line" style="font-size:10px;" placeholder="Slot 3">
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:2px; margin-top:5px;">
+                <div class="stat-box"><div class="label-tiny">CP</div><input id="cp" style="width:100%; border:none; text-align:center;"></div>
+                <div class="stat-box"><div class="label-tiny">SP</div><input id="spc" style="width:100%; border:none; text-align:center;"></div>
+                <div class="stat-box"><div class="label-tiny">EP</div><input id="ep" style="width:100%; border:none; text-align:center;"></div>
+                <div class="stat-box"><div class="label-tiny">GP</div><input id="gp" style="width:100%; border:none; text-align:center;"></div>
+                <div class="stat-box"><div class="label-tiny">PP</div><input id="pp" style="width:100%; border:none; text-align:center;"></div>
+            </div>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column;"><div class="label-tiny">Backstory</div><textarea id="bks" style="flex-grow:1; min-height:220px;"></textarea></div>
+    </div>
+</div>
+
+<script>
+    const abilities = [{id:'str', n:'STR', s:['Save','Athletics']},{id:'dex', n:'DEX', s:['Save','Acrobatics','Sleight','Stealth']},{id:'con', n:'CON', s:['Save']},{id:'int', n:'INT', s:['Save','Arcana','History','Invest','Nature','Religion']},{id:'wis', n:'WIS', s:['Save','Animal','Insight','Med','Percept','Surv']},{id:'cha', n:'CHA', s:['Save','Decept','Intim','Perf','Persu']}];
+    const abGrid = document.getElementById('abilityContainer');
+    abilities.forEach(ab => {
+        let sHtml = ab.s.map(sk => `<div class="skill-row"><input type="checkbox" id="${ab.id}_${sk}_p" class="diamond"><input type="text" id="${ab.id}_${sk}_v" placeholder="0"><label>${sk}</label></div>`).join('');
+        abGrid.innerHTML += `<div class="ability-box"><div class="label-tiny">${ab.n}</div><input type="text" id="${ab.id}_m" class="mod-display" placeholder="+0"><input type="text" id="${ab.id}_s" class="score-circle" placeholder="10">${sHtml}</div>`;
+    });
+    for(let i=0; i<8; i++) document.getElementById('weaponRows').innerHTML += `<div class="scroll-row"><input id="w${i}n" style="width:25%" placeholder="Weapon"><input id="w${i}a" style="width:10%; text-align:center;" placeholder="+5"><input id="w${i}d" style="width:15%; text-align:center;" placeholder="1d8"><textarea id="w${i}x" style="width:50%" placeholder="Notes"></textarea></div>`;
+    const slts = [[4,'L1'],[3,'L2'],[3,'L3'],[3,'L4'],[3,'L5'],[2,'L6'],[2,'L7'],[1,'L8'],[1,'L9']];
+    slts.forEach((s, idx) => {
+        let chks = ''; for(let i=0; i<s[0]; i++) chks += `<input type="checkbox" id="sl${idx}_${i}" class="diamond">`;
+        document.getElementById('slots').innerHTML += `<div class="slot-row">${s[1]} <input id="sl${idx}v" class="slot-line" placeholder="0"> ${chks}</div>`;
+    });
+    for(let i=0; i<15; i++) document.getElementById('spellRows').innerHTML += `<div class="scroll-row"><input id="s${i}l" style="width:5%; text-align:center;" placeholder="1"><input id="s${i}n" style="width:20%" placeholder="Spell Name"><input id="s${i}t" style="width:10%; text-align:center;" placeholder="1A"><input id="s${i}r" style="width:10%; text-align:center;" placeholder="60ft"><input id="s${i}g" style="width:20%; text-align:center;" placeholder="V,S"><textarea id="s${i}x" style="width:35%" placeholder="Effect"></textarea></div>`;
+
+    function updateUrl() {
+        const data = {};
+        document.querySelectorAll('input, textarea').forEach(el => {
+            if (el.id && el.id !== 'shareLink') {
+                const val = (el.type === 'checkbox') ? (el.checked ? 1 : null) : el.value;
+                if (val !== "" && val !== null && val !== "10" && val !== "+0") {
+                    data[el.id] = val;
+                }
+            }
+        });
+        const str = btoa(JSON.stringify(data));
+        const newUrl = window.location.origin + window.location.pathname + '?d=' + str;
+        document.getElementById('shareLink').value = newUrl;
+        window.history.replaceState(null, null, newUrl);
+    }
+
+    function copyToClipboard() {
+        const copyText = document.getElementById("shareLink");
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value);
+        alert("Link Copied! Save this bookmark.");
+    }
+
+    document.addEventListener('input', updateUrl);
+
+    window.onload = function() {
+        const params = new URLSearchParams(window.location.search);
+        const d = params.get('d');
+        if (d) {
+            try {
+                const data = JSON.parse(atob(d));
+                Object.keys(data).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el) {
+                        if (el.type === 'checkbox') el.checked = (data[key] === 1);
+                        else el.value = data[key];
+                    }
+                });
+            } catch(e) { console.error("Load failed", e); }
+        }
+        updateUrl();
+    };
+</script>
+</body>
+</html>
